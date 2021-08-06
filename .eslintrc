@@ -94,7 +94,7 @@
         "keepass": true,
         "kpxc": true,
         "kpxcBanner": true,
-        "kpxcDefine": true,
+        "kpxcCustomLoginFieldsBanner": true,
         "kpxcFields": true,
         "kpxcEvent": true,
         "kpxcPasswordDialog": true,

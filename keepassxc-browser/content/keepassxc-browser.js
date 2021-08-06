@@ -717,12 +717,6 @@ kpxcFields.useCustomLoginFields = async function() {
         kpxcTOTPIcons.newIcon(totp, kpxc.databaseState);
     }
 
-    // If not all expected fields are identified, return an empty combination
-    if ((creds.username && !username) || (creds.password && !password) || (creds.totp && !totp)
-        || (creds.fields.length !== stringFields.length)) {
-        return [];
-    }
-
     const combinations = [];
     combinations.push({
         username: username,
@@ -1130,8 +1124,12 @@ kpxc.fillInStringFields = function(fields, stringFields) {
     const filledInFields = [];
     if (fields && stringFields && fields.length > 0 && stringFields.length > 0) {
         for (let i = 0; i < fields.length; i++) {
-            const currentField = fields[i];
+            if (i >= stringFields.length) {
+                continue;
+            }
+
             const stringFieldValue = Object.values(stringFields[i]);
+            const currentField = fields[i];
 
             if (currentField && stringFieldValue[0]) {
                 kpxc.setValue(currentField, stringFieldValue[0]);
@@ -2080,7 +2078,7 @@ browser.runtime.onMessage.addListener(async function(req, sender) {
         } else if (req.action === 'check_database_hash' && 'hash' in req) {
             kpxc.detectDatabaseChange(req);
         } else if (req.action === 'choose_credential_fields') {
-            kpxcDefine.init();
+            kpxcCustomLoginFieldsBanner.create();
         } else if (req.action === 'clear_credentials') {
             kpxc.clearAllFromPage();
         } else if (req.action === 'fill_user_pass_with_specific_login') {
