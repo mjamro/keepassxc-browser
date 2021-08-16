@@ -478,6 +478,31 @@ kpxcFields.getCombination = async function(field, givenType) {
     return undefined;
 };
 
+// If there are multiple combinations, return the first one where input field can be found inside the document.
+// Used with Custom Login Fields where selected input fields might not be visible on the page yet,
+// and there's an extra combination for those. Only used from popup fill.
+kpxcFields.getCombinationFromAllInputs = function() {
+    const inputs = kpxcObserverHelper.getInputs(document.body);
+
+    for (const combination of kpxc.combinations) {
+        for (const value of Object.values(combination)) {
+            if (Array.isArray(value)) {
+                for (const v of value) {
+                    if (inputs.some(i => i === v)) {
+                        return combination;
+                    }
+                }
+            } else {
+                if (inputs.some(i => i === value)) {
+                    return combination;
+                }
+            }
+        }
+    }
+
+    return kpxc.combinations[0];
+};
+
 // Sets and returns unique ID's for the element
 kpxcFields.setId = function(target) {
     return [ kpxcFields.getIdFromXPath(target), kpxcFields.getIdFromProperties(target) ];
@@ -952,7 +977,8 @@ kpxc.fillFromPopup = async function(id, uuid) {
         return;
     }
 
-    kpxc.fillInCredentials(kpxc.combinations[0], selectedCredentials.login, uuid);
+    const foundCombination = kpxcFields.getCombinationFromAllInputs();
+    kpxc.fillInCredentials(foundCombination, selectedCredentials.login, uuid);
     kpxcUserAutocomplete.closeList();
 };
 
@@ -1059,7 +1085,7 @@ kpxc.fillInCredentials = async function(combination, predefinedUsername, uuid, p
         return;
     }
 
-    if (!combination || (!combination.username && !combination.password)) {
+    if (!combination) {
         return;
     }
 
@@ -1297,6 +1323,11 @@ kpxc.initCombinations = async function(inputs = []) {
         if (!kpxc.combinations.some(f => f.username === c.username && f.password === c.password && f.totp === c.totp && f.form === c.form)) {
             kpxc.combinations.push(c);
         }
+    }
+
+    // Update the fields in Custom Login Fields banner if it's open
+    if (kpxcCustomLoginFieldsBanner.created) {
+        kpxcCustomLoginFieldsBanner.updateFieldSelections();
     }
 
     return combinations;
