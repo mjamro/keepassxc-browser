@@ -1603,6 +1603,8 @@ kpxc.receiveCredentialsIfNecessary = async function() {
         // If the database was locked, this is scope never met. In these cases the response is met at kpxc.detectDatabaseChange
         await sendMessage('page_set_manual_fill', ManualFill.NONE);
         await kpxc.retrieveCredentialsCallback(credentials);
+
+        kpxcIcons.switchIcons();
         return credentials;
     }
 
@@ -2042,6 +2044,8 @@ const initContentScript = async function() {
 
             kpxc.rememberCredentials(creds.username, creds.password, creds.url, creds.oldCredentials);
         }
+
+        kpxcIcons.switchIcons();
     } catch (err) {
         console.log('initContentScript error: ', err);
     }

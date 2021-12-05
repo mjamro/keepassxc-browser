@@ -32,3 +32,13 @@
     background: url('moz-extension://__MSG_@@extension_id__/icons/keepassxc.svg') right no-repeat;
     background-size: contain;
 }
+
+.kpxc-username-icon.no-credentials {
+    background: url('chrome-extension://__MSG_@@extension_id__/icons/keepassxc-dark.svg') right no-repeat;
+    background-size: contain;
+}
+
+.kpxc-username-icon.no-credentials-moz {
+    background: url('moz-extension://__MSG_@@extension_id__/icons/keepassxc-dark.svg') right no-repeat;
+    background-size: contain;
+}
